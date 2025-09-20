@@ -33,13 +33,28 @@ class authController {
       const { email, password } = req.body;
       if (password != undefined && email != undefined) {
         let auth = await authService.login(email, password);
-        res.status(200).json({ auth, message: " User found" });
+        res.status(200).json({ message: " User found" });
       } else {
         throw new Error(" missing email or password");
       }
     } catch (error) {
       console.error("Error during login", error);
       res.status(400).json({ message: " user not found in the database" });
+    }
+  }
+  static async verifyUser(req, res) {
+    try {
+      // 1. Get data from the request
+      const authHeader = req.headers["authorization"];
+      const { email } = req.body;
+
+      // 2. Call the SERVICE function
+      const user = await authService.verifyUser(email, authHeader);
+
+      // 3. Send response to client
+      res.status(200).json({ user, message: "User verified successfully" });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
     }
   }
 }

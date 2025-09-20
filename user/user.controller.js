@@ -1,16 +1,7 @@
 import userService from "./user.service.js";
 
 class userController {
-  static async findOne(req, res) {
-    try {
-      const authHeder = req.headers["authorization"];
-      const { email } = req.body;
-      const user = await userService.findOne(email, authHeder);
-      res.status(200).json({ user, message: "user found" });
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
-  }
+
   static async findAll(req, res) {
     try {
       const users = await userService.findAll();
