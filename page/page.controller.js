@@ -4,9 +4,7 @@ class pageController {
   static async createPage(req, res) {
     try {
       const { email } = req.body;
-            console.log("we are in the create a page in page.controller before creating page");
       await pageService.createPage(email);
-      console.log("we are in the create a page in page.controller after ceating page");
       res.status(res, {
         statuscode: 201,
         message: "page created",

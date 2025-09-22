@@ -8,6 +8,8 @@ import userRoute from "./user/user.route.js";
 
 import pageRoute from "./page/page.route.js"
 
+import postRouter from "./post/post.route.js"
+
 const { json, urlencoded } = bodyParser;
 const app = express();
 app.use(urlencoded({ extended: false }));
@@ -17,6 +19,7 @@ app.use(json());
 app.use("/auth", authRouter);
 app.use("/user", userRoute);
 app.use("/page" , pageRoute)
+app.use("/post" , postRouter)
 
 app.get("/", (req, res) => {
   res.status(200).send("Server is running successfully!");

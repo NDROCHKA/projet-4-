@@ -1,12 +1,9 @@
 import userSchema from "./auth.model.js";
 import pageService from "../page/page.service.js";
-import {
-  verifyTokenFromHeader,
-  signToken,
-} from "../utils/utils.verifyToken.js";
-import pkg from "jsonwebtoken";
+import verifyTokenFromHeader from "./middelware_authentication.js";
+import { signToken } from "../utils/jwt.utils.js";
+
 import bcrypt from "bcrypt";
-const { sign } = pkg;
 class authService {
   static async register(firstName, lastName, email, password) {
     const saltRounds = 12;
@@ -32,18 +29,18 @@ class authService {
     if (!isPasswordValid) {
       throw new Error("Email or password is incorrect");
     }
-    const token = signToken({ _id: user._id });
+    const token = signToken({ _id: user._id, email: user.email });
     return token;
   }
-  static async verifyUser(email, authHeader) {
+  static async verifyUser(userIdFromToken, email) {
     const user = await userSchema.findOne({ email });
     if (!user) {
       throw new Error("User not found");
     }
-    const payload = verifyTokenFromHeader(authHeader);
-    if (payload._id !== user._id.toString()) {
+    if (userIdFromToken !== user._id.toString()) {
       throw new Error("Token does not belong to this user");
     }
+
     return user;
   }
 }

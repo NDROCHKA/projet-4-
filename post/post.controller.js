@@ -1,13 +1,21 @@
-import postService from"./post.service.js"
+import postService from "./post.service.js";
 
 class postController {
   static async createPost(req, res) {
-    try{
-        const{title , content , token } = req.body;
-        // here i call the middleman that i need to create that has authenticate, it has the verify function
-        let post = postService.createPost(title , content)
+    try {
+      const userId = req.user._id;
+      const userEmail = req.user.email;
+      const { title, content } = req.body;
+      let post = await postService.createPost(
+        userId,
+        userEmail,
+        title,
+        content
+      );
+      res.status(200).json({ messgage: "post successful\n,", post });
+    } catch (Error) {
+      res.status(401).json({ messgage: "post unsuccessful\n,", Error });
     }
-    catch(Error){}
   }
   static async findOne(req, res) {}
   static async findAll(req, res) {}

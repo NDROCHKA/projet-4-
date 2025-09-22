@@ -32,8 +32,8 @@ class authController {
     try {
       const { email, password } = req.body;
       if (password != undefined && email != undefined) {
-        let auth = await authService.login(email, password);
-        res.status(200).json({ message: " User found" });
+        let token = await authService.login(email, password);
+        res.status(200).json({ message: " User found\n" , token });
       } else {
         throw new Error(" missing email or password");
       }
@@ -45,14 +45,15 @@ class authController {
   static async verifyUser(req, res) {
     try {
       // 1. Get data from the request
-      const authHeader = req.headers["authorization"];
-      const { email } = req.body;
+       const userIdFromToken = req.user._id;
 
-      // 2. Call the SERVICE function
-      const user = await authService.verifyUser(email, authHeader);
+       // 2. Get email from the request body
+       const { email } = req.body;
 
-      // 3. Send response to client
-      res.status(200).json({ user, message: "User verified successfully" });
+       // Pass both the ID (from token) and email (from body) to the service
+       const user = await authService.verifyUser(userIdFromToken, email);
+
+       res.status(200).json({ user, message: "user found" });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
