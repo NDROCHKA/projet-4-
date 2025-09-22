@@ -2,7 +2,7 @@ import express from "express";
 import postController from "./post.controller.js";
 import Authenticate from "../authentication/middelware_authentication.js";
 
-const router = express();
+const router = express.Router();
 
 router.post(
   "/createPost",

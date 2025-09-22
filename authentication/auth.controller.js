@@ -44,10 +44,7 @@ class authController {
   }
   static async verifyUser(req, res) {
     try {
-      // 1. Get data from the request
        const userIdFromToken = req.user._id;
-
-       // 2. Get email from the request body
        const { email } = req.body;
 
        // Pass both the ID (from token) and email (from body) to the service

@@ -2,15 +2,15 @@ import express from "express";
 import authController from "./auth.controller.js";
 import Authenticate from "./middelware_authentication.js"
 
-const authRouter = express.Router();
+const router = express.Router();
 
-authRouter.post("/register",authController.register)
-authRouter.get("/login", authController.login)
-authRouter.get(
+router.post("/register", authController.register);
+router.post("/login", authController.login);
+router.post(
   "/verifyUser",
   Authenticate.authenticateJwt,
   authController.verifyUser
 );
 
 
-export default authRouter;
+export default router;

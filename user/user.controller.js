@@ -12,9 +12,8 @@ class userController {
   }
   static async deleteUser(req, res) {
     try {
-      const authHeader = req.headers["authorization"];
       const { _id } = req.body;
-      const user = await userService.deleteUser(_id, authHeader);
+      const user = await userService.deleteUser(_id, );
       res.status(200).json(user);
     } catch (error) {
       res.status(400).json({ message: error.message });

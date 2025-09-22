@@ -6,8 +6,8 @@ const postSchema = new Schema({
   content: { type: String, required: true },
   authorEmail:{type:String , required:true},
   authorId: {
-    type: Schema.Types.ObjectId, // Stores the User's ID
-    ref: "user", // Reference to the ser model
+    type: Schema.Types.ObjectId, // stores the Users ID when i pass it in the serviec
+    ref: "user", // reference to the user model
     required: true,
   },
   createdAt: { type: Date, default: Date.now },
@@ -15,5 +15,4 @@ const postSchema = new Schema({
 
 const Post = mongoose.model("Post", postSchema);
 
-// Export the Model, not the Schema
-export default Post; // Export the schema, not the model , why , whats the diffrence
+export default Post;

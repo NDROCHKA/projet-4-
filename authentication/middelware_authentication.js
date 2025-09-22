@@ -1,4 +1,3 @@
-// middleware/authenticate.js
 import pkg from "jsonwebtoken";
 const { verify } = pkg 
 class Authenticate {

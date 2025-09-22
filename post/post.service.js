@@ -11,7 +11,7 @@ class postService {
      title: title,
      content: content,
      authorEmail: userEmail,
-     authorId: userId, // Mongoose will auto-convert string to ObjectId
+     authorId: userId, //here i add the userId as objectId in the db file of the posts, the id of user
    });
 
     const savedNewPost = await newPost.save();
