@@ -1,0 +1,28 @@
+{
+  "name": "project_4",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "backeend",
+  "homepage": "https://github.com/NDROCHKA/projet-4-#readme",
+  "bugs": {
+    "url": "https://github.com/NDROCHKA/projet-4-/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NDROCHKA/projet-4-.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "joy": "^0.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.2"
+  }
+}
