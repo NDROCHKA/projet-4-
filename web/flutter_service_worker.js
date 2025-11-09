@@ -7,8 +7,8 @@ const RESOURCES = {"assets/AssetManifest.bin": "0b0a3415aad49b6e9bf965ff578614f9
 "assets/AssetManifest.bin.json": "a1fee2517bf598633e2f67fcf3e26c94",
 "assets/AssetManifest.json": "99914b932bd37a50b983c5e7c90ae93b",
 "assets/FontManifest.json": "7b2a36307916a9721811788013e65289",
-"assets/fonts/MaterialIcons-Regular.otf": "975872e6252757ff6d9a4d9f0af1a9a2",
-"assets/NOTICES": "6b9655d2e4af1ff676165d93779a46b4",
+"assets/fonts/MaterialIcons-Regular.otf": "251feeb89e8bd4be8d785792b97ca756",
+"assets/NOTICES": "1fef8d380430350eadea4acdd39032ef",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
 "canvaskit/canvaskit.js": "140ccb7d34d0a55065fbd422b843add6",
 "canvaskit/canvaskit.js.symbols": "58832fbed59e00d2190aa295c4d70360",
@@ -24,16 +24,16 @@ const RESOURCES = {"assets/AssetManifest.bin": "0b0a3415aad49b6e9bf965ff578614f9
 "canvaskit/skwasm_heavy.wasm": "8034ad26ba2485dab2fd49bdd786837b",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "flutter.js": "888483df48293866f9f41d3d9274a779",
-"flutter_bootstrap.js": "87ad810a0b2b98de3ff6f68f30209828",
+"flutter_bootstrap.js": "8925a8604546bf3b05f46775ec9216b9",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "acd43727cb28821da4b3dd7950776129",
-"/": "acd43727cb28821da4b3dd7950776129",
-"main.dart.js": "021e0122b350c759fe45220d34de5314",
-"manifest.json": "3aa4ac3a10dd358f305049eb49dc013f",
-"version.json": "45c61084d53a5023152d6cad258110ab"};
+"index.html": "4e5fa26d070b6a128b611681cdedc6e5",
+"/": "4e5fa26d070b6a128b611681cdedc6e5",
+"main.dart.js": "b697c46af1918208640d192426535920",
+"manifest.json": "09b576fa710b66a06061caa75c24bfb1",
+"version.json": "617ea52030031260ae87f1d345ff25a8"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
