@@ -1,6 +1,5 @@
 import userSchema from "./auth.model.js";
 import pageService from "../page/page.service.js";
-import verifyTokenFromHeader from "./middelware_authentication.js";
 import { signToken } from "../utils/jwt.utils.js";
 
 import bcrypt from "bcrypt";
