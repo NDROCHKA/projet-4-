@@ -1,17 +1,15 @@
+// page/page.model.js
 import mongoose from "mongoose";
-import postSchema from "../post/post.model.js"; // Import the SCHEMA
-
 const { Schema } = mongoose;
 
 const pageSchema = new Schema({
-  posts: [
-    {
-      type: Schema.Types.ObjectId, // Store only the Post ID
-      ref: "Post", // Reference to the Post model
-    },
-  ],
-  email: { type: String, required: true },
-  default: [],
+  email: { type: String, required: true, unique: true },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
+  },
+  createdAt: { type: Date, default: Date.now },
 });
 
 export default mongoose.model("page", pageSchema);
