@@ -99,6 +99,7 @@ export const getVideo = async (req, res) => {
 };
 
 // Delete video
+// Delete video
 export const deleteVideo = async (req, res) => {
   try {
     const video = await Video.findById(req.params.id);
@@ -110,14 +111,16 @@ export const deleteVideo = async (req, res) => {
       });
     }
 
-    // Extract file keys from URLs
-    const videoKey = video.videoUrl.split("/").pop();
-    const thumbnailKey = video.thumbnailUrl.split("/").pop();
+    // Extract file keys from URLs - FIXED
+    const videoKey = video.videoUrl.split("/").slice(3).join("/"); // Get path after domain
+    const thumbnailKey = video.thumbnailUrl
+      ? video.thumbnailUrl.split("/").slice(3).join("/")
+      : null;
 
     // Delete from Backblaze B2
-    await deleteFromBackblaze(`videos/${videoKey}`);
-    if (video.thumbnailUrl) {
-      await deleteFromBackblaze(`thumbnails/${thumbnailKey}`);
+    await deleteFromBackblaze(videoKey);
+    if (thumbnailKey) {
+      await deleteFromBackblaze(thumbnailKey);
     }
 
     // Delete from MongoDB
