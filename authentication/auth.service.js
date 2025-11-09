@@ -1,19 +1,23 @@
 import userSchema from "./auth.model.js";
 import pageService from "../page/page.service.js";
 import { signToken } from "../utils/jwt.utils.js";
-
 import bcrypt from "bcrypt";
+
 class authService {
   static async register(firstName, lastName, email, password) {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Create user and get the saved user with _id
     const user = await new userSchema({
       firstName,
       lastName,
       email,
       password: hashedPassword,
     }).save();
-    pageService.createPage(email);
+
+    // FIX: Pass userId AND email to page service
+    pageService.createPage(user._id, email);
     return user;
   }
 
@@ -31,6 +35,7 @@ class authService {
     const token = signToken({ _id: user._id, email: user.email });
     return token;
   }
+
   static async verifyUser(userIdFromToken, email) {
     const user = await userSchema.findOne({ email });
     if (!user) {
