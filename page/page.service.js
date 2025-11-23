@@ -2,12 +2,8 @@
 import pageModel from "./page.model.js";
 
 class pageService {
-  static async createPage(userId, email) {
-    // FIX: Create page with both userId and email
-    const page = await new pageModel({
-      userId: userId,
-      email: email,
-    }).save();
+  static async createPage(email, userId) {
+    const page = await new pageModel({ email, userId }).save();
     return page;
   }
 }

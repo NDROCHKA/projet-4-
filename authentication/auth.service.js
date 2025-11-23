@@ -16,8 +16,8 @@ class authService {
       password: hashedPassword,
     }).save();
 
-    // FIX: Pass userId AND email to page service
-    pageService.createPage(user._id, email);
+    // Create page with userId and email
+    await pageService.createPage(email, user._id);
     return user;
   }
 
