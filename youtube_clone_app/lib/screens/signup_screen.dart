@@ -19,6 +19,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _descriptionController = TextEditingController();
   final _apiService = ApiService();
   bool _isLoading = false;
+  DateTime? _selectedDate;
 
   @override
   void dispose() {
@@ -31,6 +32,20 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
+
   void _signup() async {
     setState(() => _isLoading = true);
     final success = await _apiService.register(
@@ -40,6 +55,7 @@ class _SignupScreenState extends State<SignupScreen> {
       _passwordController.text,
       _profileImageController.text,
       _descriptionController.text,
+      _selectedDate?.toIso8601String() ?? '',
     );
     setState(() => _isLoading = false);
 
@@ -88,6 +104,34 @@ class _SignupScreenState extends State<SignupScreen> {
               controller: _descriptionController,
               label: 'Description (optional)',
               maxLines: 3,
+            ),
+            const SizedBox(height: 16),
+            // Birthdate picker
+            InkWell(
+              onTap: () => _selectDate(context),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey[100],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _selectedDate == null
+                          ? 'Select Birthdate (optional)'
+                          : 'Birthdate: ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: _selectedDate == null ? Colors.grey[600] : Colors.black,
+                      ),
+                    ),
+                    const Icon(Icons.calendar_today, color: Color(0xFFB71C1C)),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 24),
             CustomButton(

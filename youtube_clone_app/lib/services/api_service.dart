@@ -29,7 +29,15 @@ class ApiService {
     }
   }
 
-  Future<bool> register(String firstname, String lastname, String email, String password) async {
+  Future<bool> register(
+    String firstname, 
+    String lastname, 
+    String email, 
+    String password,
+    String profileImage,
+    String description,
+    String birthdate,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/auth/register'),
@@ -39,6 +47,9 @@ class ApiService {
           'lastname': lastname,
           'email': email,
           'password': password,
+          'profileImage': profileImage,
+          'description': description,
+          'birthdate': birthdate,
         }),
       );
 

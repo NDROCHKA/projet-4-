@@ -4,7 +4,7 @@ import { signToken } from "../utils/jwt.utils.js";
 import bcrypt from "bcrypt";
 
 class authService {
-  static async register(firstName, lastName, email, password, profileImage = '', description = '') {
+  static async register(firstName, lastName, email, password, profileImage = '', description = '', birthdate = null) {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -14,6 +14,7 @@ class authService {
       lastName,
       email,
       password: hashedPassword,
+      birthdate: birthdate ? new Date(birthdate) : null,
     }).save();
 
     // Create page with userId, email, and profile data

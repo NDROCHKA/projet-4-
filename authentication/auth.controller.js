@@ -2,7 +2,7 @@ import authService from "./auth.service.js";
 class authController {
   static async register(req, res) {
     try {
-      const { firstname, lastname, email, password, profileImage, description } = req.body;
+      const { firstname, lastname, email, password, profileImage, description, birthdate } = req.body;
 
       if (!email || !password) {
         return res
@@ -16,7 +16,8 @@ class authController {
         email,
         password,
         profileImage,
-        description
+        description,
+        birthdate
       );
       res.status(201).json({
         message: "User created successfully",
