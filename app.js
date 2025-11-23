@@ -10,7 +10,9 @@ import authRouter from "./authentication/auth.route.js";
 import userRoute from "./user/user.route.js";
 import pageRoute from "./page/page.route.js";
 import postRouter from "./post/post.route.js";
+
 import videoRouter from "./videos/video.route.js";
+import proxyRouter from "./proxy/proxy.route.js";
 
 const { json, urlencoded } = bodyParser;
 const app = express();
@@ -36,6 +38,7 @@ app.use("/user", userRoute);
 app.use("/page", pageRoute);
 app.use("/post", postRouter);
 app.use("/video", videoRouter);
+app.use("/proxy", proxyRouter);
 
 // FIXED THIS LINE - removed the extra =>
 app.get("/", (req, res) => {
