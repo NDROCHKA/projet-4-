@@ -12,7 +12,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ApiService _apiService = ApiService();
   final TextEditingController _searchController = TextEditingController();
@@ -31,7 +32,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     try {
       final videoData = await _apiService.getVideos();
       setState(() {
-        final allVideos = videoData.map((json) => Video.fromJson(json)).toList();
+        final allVideos = videoData
+            .map((json) => Video.fromJson(json))
+            .toList();
         print("Fetched ${allVideos.length} videos");
         if (allVideos.isNotEmpty) {
           print("First video thumbnail: ${allVideos[0].thumbnailUrl}");
@@ -112,8 +115,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         _filteredVideos = _videos;
       } else {
         _filteredVideos = _videos
-            .where((video) =>
-                video.title.toLowerCase().contains(query.toLowerCase()))
+            .where(
+              (video) =>
+                  video.title.toLowerCase().contains(query.toLowerCase()),
+            )
             .toList();
       }
     });
@@ -154,20 +159,20 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _filteredVideos.isEmpty
-                  ? const Center(child: Text('No videos found'))
-                  : GridView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 16 / 9,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                      ),
-                      itemCount: _filteredVideos.length,
-                      itemBuilder: (context, index) {
-                        return VideoGridItem(video: _filteredVideos[index]);
-                      },
-                    ),
+              ? const Center(child: Text('No videos found'))
+              : GridView.builder(
+                  padding: const EdgeInsets.all(8.0),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 16 / 9,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemCount: _filteredVideos.length,
+                  itemBuilder: (context, index) {
+                    return VideoGridItem(video: _filteredVideos[index]);
+                  },
+                ),
         ),
       ],
     );

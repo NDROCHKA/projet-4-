@@ -10,7 +10,6 @@ import authRouter from "./authentication/auth.route.js";
 import userRoute from "./user/user.route.js";
 import pageRoute from "./page/page.route.js";
 import postRouter from "./post/post.route.js";
-
 import videoRouter from "./videos/video.route.js";
 import proxyRouter from "./proxy/proxy.route.js";
 
@@ -30,7 +29,8 @@ app.use(cors());
 app.use(urlencoded({ extended: false }));
 app.use(json());
 
-app.use(express.static(path.join(__dirname, "web")));
+// Serve Flutter web build from youtube_clone_app/build/web
+app.use(express.static(path.join(__dirname, "youtube_clone_app/build/web")));
 
 // Then your routes
 app.use("/auth", authRouter);
@@ -40,11 +40,14 @@ app.use("/post", postRouter);
 app.use("/video", videoRouter);
 app.use("/proxy", proxyRouter);
 
-// FIXED THIS LINE - removed the extra =>
+// Serve Flutter app for all routes - MUST BE LAST
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "web", "index.html"));
+  res.sendFile(
+    path.join(__dirname, "youtube_clone_app/build/web", "index.html")
+  );
 });
 
 app.listen(3500, "0.0.0.0", () => {
   console.log("Server is running on port 3500");
+  console.log("Serving Flutter app from: youtube_clone_app/build/web");
 });
