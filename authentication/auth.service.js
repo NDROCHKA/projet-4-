@@ -4,7 +4,7 @@ import { signToken } from "../utils/jwt.utils.js";
 import bcrypt from "bcrypt";
 
 class authService {
-  static async register(firstName, lastName, email, password) {
+  static async register(firstName, lastName, email, password, profileImage = '', description = '') {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -16,8 +16,9 @@ class authService {
       password: hashedPassword,
     }).save();
 
-    // Create page with userId and email
-    await pageService.createPage(email, user._id);
+    // Create page with userId, email, and profile data
+    const name = `${firstName} ${lastName}`;
+    await pageService.createPage(email, user._id, name, profileImage, description);
     return user;
   }
 

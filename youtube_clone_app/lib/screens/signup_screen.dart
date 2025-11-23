@@ -15,6 +15,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _lastnameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _profileImageController = TextEditingController();
+  final _descriptionController = TextEditingController();
   final _apiService = ApiService();
   bool _isLoading = false;
 
@@ -24,6 +26,8 @@ class _SignupScreenState extends State<SignupScreen> {
     _lastnameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _profileImageController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -34,6 +38,8 @@ class _SignupScreenState extends State<SignupScreen> {
       _lastnameController.text,
       _emailController.text,
       _passwordController.text,
+      _profileImageController.text,
+      _descriptionController.text,
     );
     setState(() => _isLoading = false);
 
@@ -73,6 +79,15 @@ class _SignupScreenState extends State<SignupScreen> {
               controller: _passwordController,
               label: 'Password',
               isPassword: true,
+            ),
+            CustomTextField(
+              controller: _profileImageController,
+              label: 'Profile Image URL (optional)',
+            ),
+            CustomTextField(
+              controller: _descriptionController,
+              label: 'Description (optional)',
+              maxLines: 3,
             ),
             const SizedBox(height: 24),
             CustomButton(
