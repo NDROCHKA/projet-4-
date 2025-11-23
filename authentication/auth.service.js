@@ -13,7 +13,7 @@ class authService {
       email,
       password: hashedPassword,
     }).save();
-    pageService.createPage(email);
+    await pageService.createPage(email, user._id);
     return user;
   }
 
