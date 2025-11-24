@@ -12,5 +12,10 @@ class pageService {
     }).save();
     return page;
   }
+
+  static async getPageByUserId(userId) {
+    const page = await pageModel.findOne({ userId: userId });
+    return page;
+  }
 }
 export default pageService;

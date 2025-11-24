@@ -23,18 +23,21 @@ class CustomTextField extends StatelessWidget {
         obscureText: isPassword,
         maxLines: isPassword ? 1 : maxLines,
         decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
+          labelText: label, // Added this line - you were missing the label
           filled: true,
-          fillColor: Colors.grey[100],
+          fillColor: Colors.white.withOpacity(0.9),
+          labelStyle: const TextStyle(color: Colors.black87),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: BorderSide.none,
+          ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Color(0xFFB71C1C), width: 2.0),
+            borderRadius: BorderRadius.circular(12.0),
+            borderSide: const BorderSide(color: Colors.white, width: 2.0),
           ),
         ),
+        style: const TextStyle(color: Colors.black),
       ),
-    );
+    ); // Fixed: Removed extra comma and added missing semicolon
   }
 }

@@ -75,71 +75,85 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Sign Up')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            CustomTextField(
-              controller: _firstnameController,
-              label: 'First Name',
-            ),
-            CustomTextField(
-              controller: _lastnameController,
-              label: 'Last Name',
-            ),
-            CustomTextField(
-              controller: _emailController,
-              label: 'Email',
-            ),
-            CustomTextField(
-              controller: _passwordController,
-              label: 'Password',
-              isPassword: true,
-            ),
-            CustomTextField(
-              controller: _profileImageController,
-              label: 'Profile Image URL (optional)',
-            ),
-            CustomTextField(
-              controller: _descriptionController,
-              label: 'Description (optional)',
-              maxLines: 3,
-            ),
-            const SizedBox(height: 16),
-            // Birthdate picker
-            InkWell(
-              onTap: () => _selectDate(context),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey[100],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      _selectedDate == null
-                          ? 'Select Birthdate (optional)'
-                          : 'Birthdate: ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: _selectedDate == null ? Colors.grey[600] : Colors.black,
+      body: Container(
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFB71C1C), // Deep Red
+              Color(0xFF000000), // Black
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+              CustomTextField(
+                controller: _firstnameController,
+                label: 'First Name',
+              ),
+              CustomTextField(
+                controller: _lastnameController,
+                label: 'Last Name',
+              ),
+              CustomTextField(
+                controller: _emailController,
+                label: 'Email',
+              ),
+              CustomTextField(
+                controller: _passwordController,
+                label: 'Password',
+                isPassword: true,
+              ),
+              CustomTextField(
+                controller: _profileImageController,
+                label: 'Profile Image URL (optional)',
+              ),
+              CustomTextField(
+                controller: _descriptionController,
+                label: 'Description (optional)',
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              // Birthdate picker
+              InkWell(
+                onTap: () => _selectDate(context),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _selectedDate == null
+                            ? 'Select Birthdate (optional)'
+                            : 'Birthdate: ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: _selectedDate == null ? Colors.black54 : Colors.black,
+                        ),
                       ),
-                    ),
-                    const Icon(Icons.calendar_today, color: Color(0xFFB71C1C)),
-                  ],
+                      const Icon(Icons.calendar_today, color: Color(0xFFB71C1C)),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            CustomButton(
-              text: 'Sign Up',
-              onPressed: _signup,
-              isLoading: _isLoading,
-            ),
-          ],
+              const SizedBox(height: 32),
+              CustomButton(
+                text: 'Sign Up',
+                onPressed: _signup,
+                isLoading: _isLoading,
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );

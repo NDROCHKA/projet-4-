@@ -52,36 +52,74 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CustomTextField(
-              controller: _emailController,
-              label: 'Email',
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFB71C1C), // Deep Red
+              Color(0xFF000000), // Black
+            ],
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.play_circle_filled,
+                  size: 100,
+                  color: Colors.white,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'YouTube Clone',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 48),
+                CustomTextField(
+                  controller: _emailController,
+                  label: 'Email',
+                ),
+                CustomTextField(
+                  controller: _passwordController,
+                  label: 'Password',
+                  isPassword: true,
+                ),
+                const SizedBox(height: 32),
+                CustomButton(
+                  text: 'Login',
+                  onPressed: _login,
+                  isLoading: _isLoading,
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const SignupScreen()),
+                    );
+                  },
+                  child: const Text(
+                    'Create Account',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            CustomTextField(
-              controller: _passwordController,
-              label: 'Password',
-              isPassword: true,
-            ),
-            const SizedBox(height: 24),
-            CustomButton(
-              text: 'Login',
-              onPressed: _login,
-              isLoading: _isLoading,
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignupScreen()),
-                );
-              },
-              child: const Text('Create Account'),
-            ),
-          ],
+          ),
         ),
       ),
     );

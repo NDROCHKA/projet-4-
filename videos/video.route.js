@@ -12,7 +12,7 @@ const router = express.Router();
 
 // POST /api/videos - Upload video
 router.post(
-  "/",
+  "/uploadvideo",
   Authenticate.authenticateJwt,
   upload.fields([
     { name: "video", maxCount: 1 },
