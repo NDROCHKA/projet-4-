@@ -87,15 +87,11 @@ class ApiService {
   }
 
   Future<List<dynamic>> getPopularVideos() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/video/popular'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
         },
       );
 
@@ -103,6 +99,8 @@ class ApiService {
         final data = jsonDecode(response.body);
         return data['data'];
       } else {
+        print('Failed to load popular videos: ${response.statusCode}');
+        print('Response body: ${response.body}');
         throw Exception('Failed to load popular videos');
       }
     } catch (e) {
@@ -112,15 +110,11 @@ class ApiService {
   }
 
   Future<List<dynamic>> getRecentVideos() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/video/recent'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
         },
       );
 
@@ -128,6 +122,8 @@ class ApiService {
         final data = jsonDecode(response.body);
         return data['data'];
       } else {
+        print('Failed to load recent videos: ${response.statusCode}');
+        print('Response body: ${response.body}');
         throw Exception('Failed to load recent videos');
       }
     } catch (e) {
