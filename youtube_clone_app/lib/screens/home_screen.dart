@@ -4,9 +4,11 @@ import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/video_model.dart';
 import '../widgets/video_grid_item.dart';
+import '../providers/auth_provider.dart';
 import 'search_results_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
+import 'login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -103,6 +105,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -116,28 +120,56 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: GestureDetector(
-              onTap: () {
+          if (!authProvider.isAuthenticated) ...[
+            TextButton(
+              onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
-              child: CircleAvatar(
-                radius: 18,
+              child: const Text(
+                'Login',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/signup');
+              },
+              style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.person,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 24,
+                foregroundColor: const Color(0xFFB71C1C),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              child: const Text('Sign Up'),
+            ),
+            const SizedBox(width: 16),
+          ] else ...[
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileScreen(),
+                    ),
+                  );
+                },
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.person,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 24,
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -255,6 +287,8 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildDrawer() {
+    final authProvider = Provider.of<AuthProvider>(context);
+    
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -291,6 +325,20 @@ class _HomeScreenState extends State<HomeScreen>
               );
             },
           ),
+          if (authProvider.isAuthenticated) ...[
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text('Logout', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                authProvider.logout();
+                Navigator.pop(context); // Close drawer
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Logged out successfully')),
+                );
+              },
+            ),
+          ],
         ],
       ),
     );

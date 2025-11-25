@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
+import 'screens/home_screen.dart';
 
 import 'package:provider/provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/auth_provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -66,8 +71,9 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/signup': (context) => const SignupScreen(),
+        '/login': (context) => const LoginScreen(),
       },
-      home: const LoginScreen(),
+      home: const HomeScreen(),
     );
   }
 }

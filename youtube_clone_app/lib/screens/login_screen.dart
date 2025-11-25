@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../providers/auth_provider.dart';
 import 'signup_screen.dart';
 import 'home_screen.dart';
 
@@ -26,6 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    
     setState(() => _isLoading = true);
     final success = await _apiService.login(
       _emailController.text,
@@ -34,13 +38,20 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
 
     if (success && mounted) {
+      // Update auth provider with user info
+      // Note: You may need to get actual user data from the API response
+      authProvider.login(
+        'user_id', // Replace with actual user ID from API
+        _emailController.text,
+        'token', // Replace with actual token from API
+      );
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Login Successful!')),
       );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      
+      // Navigate back to home screen
+      Navigator.pop(context);
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Login Failed')),

@@ -24,8 +24,8 @@ router.post(
   uploadVideo
 );
 
-// GET /api/videos - Get all videos
-router.get("/getvideos", Authenticate.authenticateJwt, getVideos);
+// GET /api/videos - Get all videos (PUBLIC - no auth required)
+router.get("/getvideos", getVideos);
 
 // GET /api/videos/:id - Get single video
 router.get("/getvideo/:id", Authenticate.authenticateJwt, getVideo);
@@ -39,7 +39,7 @@ router.get("/recent", Authenticate.authenticateJwt, getRecentVideos);
 // POST /api/videos/:id/view - Increment view count
 router.post("/:id/view", Authenticate.authenticateJwt, incrementView);
 
-// DELETE /api/videos/:id - Delete video
+// DELETE /api/videos/:id - Delete video (PROTECTED - auth required)
 router.delete("/deletevideo/:id", Authenticate.authenticateJwt, deleteVideo);
 
 export default router;

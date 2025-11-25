@@ -64,15 +64,11 @@ class ApiService {
   }
 
   Future<List<dynamic>> getVideos() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/video/getvideos'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
         },
       );
 
@@ -80,6 +76,8 @@ class ApiService {
         final data = jsonDecode(response.body);
         return data['data'];
       } else {
+        print('Failed to load videos: ${response.statusCode}');
+        print('Response body: ${response.body}');
         throw Exception('Failed to load videos');
       }
     } catch (e) {
