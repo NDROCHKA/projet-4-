@@ -162,6 +162,39 @@ export const incrementView = async (req, res) => {
   }
 };
 
+// Get my videos (user's own videos)
+export const getMyVideos = async (req, res) => {
+  try {
+    // Get user's page ID from the authenticated user
+    const Page = (await import("../page/page.model.js")).default;
+    const userPage = await Page.findOne({ userId: req.user.userId });
+
+    if (!userPage) {
+      return res.status(404).json({
+        success: false,
+        message: "User page not found",
+      });
+    }
+
+    const videos = await Video.find({ pageId: userPage._id })
+      .populate("pageId", "name")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: videos.length,
+      data: videos,
+    });
+  } catch (error) {
+    console.error("Error fetching my videos:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching your videos",
+    });
+  }
+};
+
+
 // Get single video
 export const getVideo = async (req, res) => {
   try {

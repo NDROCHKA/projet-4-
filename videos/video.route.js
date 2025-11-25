@@ -5,6 +5,7 @@ import {
   getPopularVideos,
   getRecentVideos,
   incrementView,
+  getMyVideos,
   getVideo,
   deleteVideo,
 } from "./video.controller.js";
@@ -30,11 +31,14 @@ router.get("/getvideos", getVideos);
 // GET /api/videos/:id - Get single video
 router.get("/getvideo/:id", Authenticate.authenticateJwt, getVideo);
 
-// GET /api/videos/popular - Get popular videos
-router.get("/popular", Authenticate.authenticateJwt, getPopularVideos);
+// GET /api/videos/popular - Get popular videos (PUBLIC)
+router.get("/popular", getPopularVideos);
 
-// GET /api/videos/recent - Get recent videos
-router.get("/recent", Authenticate.authenticateJwt, getRecentVideos);
+// GET /api/videos/recent - Get recent videos (PUBLIC)
+router.get("/recent", getRecentVideos);
+
+// GET /api/videos/myvideos - Get my videos (PROTECTED)
+router.get("/myvideos", Authenticate.authenticateJwt, getMyVideos);
 
 // POST /api/videos/:id/view - Increment view count
 router.post("/:id/view", Authenticate.authenticateJwt, incrementView);
