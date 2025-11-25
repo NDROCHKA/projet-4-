@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../services/api_service.dart';
 import '../models/video_model.dart';
 import '../widgets/video_grid_item.dart';
@@ -19,34 +21,75 @@ class _HomeScreenState extends State<HomeScreen>
   final ApiService _apiService = ApiService();
   final TextEditingController _searchController = TextEditingController();
   List<Video> _videos = [];
+  List<Video> _popularVideos = [];
+  List<Video> _recentVideos = [];
   List<Video> _filteredVideos = [];
   bool _isLoading = true;
+  String _currentTime = '';
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _fetchVideos();
+    _updateTime();
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) => _updateTime());
+    _fetchAllVideos();
+  }
+
+  void _updateTime() {
+    setState(() {
+      _currentTime = DateFormat('HH:mm').format(DateTime.now());
+    });
+  }
+
+  Future<void> _fetchAllVideos() async {
+    setState(() => _isLoading = true);
+    await Future.wait([
+      _fetchVideos(),
+      _fetchPopularVideos(),
+      _fetchRecentVideos(),
+    ]);
+    setState(() => _isLoading = false);
   }
 
   Future<void> _fetchVideos() async {
     try {
       final videoData = await _apiService.getVideos();
-      setState(() {
-        final allVideos = videoData
-            .map((json) => Video.fromJson(json))
-            .toList();
-        print("Fetched ${allVideos.length} videos");
-        if (allVideos.isNotEmpty) {
-          print("First video thumbnail: ${allVideos[0].thumbnailUrl}");
-        }
-        _videos = allVideos.length > 10 ? allVideos.sublist(0, 10) : allVideos;
-        _filteredVideos = _videos;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _videos = videoData.map((json) => Video.fromJson(json)).toList();
+          _filteredVideos = _videos;
+        });
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
-      // Handle error
+      print("Error fetching videos: $e");
+    }
+  }
+
+  Future<void> _fetchPopularVideos() async {
+    try {
+      final videoData = await _apiService.getPopularVideos();
+      if (mounted) {
+        setState(() {
+          _popularVideos = videoData.map((json) => Video.fromJson(json)).toList();
+        });
+      }
+    } catch (e) {
+      print("Error fetching popular videos: $e");
+    }
+  }
+
+  Future<void> _fetchRecentVideos() async {
+    try {
+      final videoData = await _apiService.getRecentVideos();
+      if (mounted) {
+        setState(() {
+          _recentVideos = videoData.map((json) => Video.fromJson(json)).toList();
+        });
+      }
+    } catch (e) {
+      print("Error fetching recent videos: $e");
     }
   }
 
@@ -54,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen>
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -61,7 +105,16 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('YouTube Clone'),
+        title: Row(
+          children: [
+            const Text('YouTube Clone'),
+            const Spacer(),
+            Text(
+              _currentTime,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -93,8 +146,8 @@ class _HomeScreenState extends State<HomeScreen>
           unselectedLabelColor: Colors.white70,
           tabs: const [
             Tab(icon: Icon(Icons.home), text: 'Home'),
-            Tab(icon: Icon(Icons.explore), text: 'Explore'),
-            Tab(icon: Icon(Icons.subscriptions), text: 'Subscriptions'),
+            Tab(icon: Icon(Icons.whatshot), text: 'Popular'),
+            Tab(icon: Icon(Icons.schedule), text: 'Recent'),
           ],
         ),
       ),
@@ -103,8 +156,8 @@ class _HomeScreenState extends State<HomeScreen>
         controller: _tabController,
         children: [
           _buildHomeTab(),
-          const Center(child: Text('Explore Tab')),
-          const Center(child: Text('Subscriptions Tab')),
+          _buildVideoGrid(_popularVideos),
+          _buildVideoGrid(_recentVideos),
         ],
       ),
     );
@@ -164,8 +217,8 @@ class _HomeScreenState extends State<HomeScreen>
               : GridView.builder(
                   padding: const EdgeInsets.all(8.0),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 16 / 9,
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.75,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                   ),
@@ -176,6 +229,28 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
         ),
       ],
+    );
+  }
+
+  Widget _buildVideoGrid(List<Video> videos) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (videos.isEmpty) {
+      return const Center(child: Text('No videos found'));
+    }
+    return GridView.builder(
+      padding: const EdgeInsets.all(8.0),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        childAspectRatio: 0.75,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: videos.length,
+      itemBuilder: (context, index) {
+        return VideoGridItem(video: videos[index]);
+      },
     );
   }
 

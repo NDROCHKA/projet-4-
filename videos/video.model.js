@@ -11,7 +11,7 @@ const videoSchema = new Schema({
   videoUrl: { type: String, required: true },
   thumbnailUrl: { type: String, required: false },
   description: { type: String, required: false },
-  createdAt: { type: Date, default: Date.now },
-});
+  views: { type: Number, default: 0 },
+}, { timestamps: true });
 
 export default mongoose.model("video", videoSchema);

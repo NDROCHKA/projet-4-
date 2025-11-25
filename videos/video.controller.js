@@ -79,6 +79,74 @@ export const getVideos = async (req, res) => {
   }
 };
 
+// Get popular videos (sorted by views desc)
+export const getPopularVideos = async (req, res) => {
+  try {
+    const videos = await Video.find()
+      .populate("pageId", "name")
+      .sort({ views: -1 });
+
+    res.json({
+      success: true,
+      count: videos.length,
+      data: videos,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching popular videos",
+    });
+  }
+};
+
+// Get recent videos (sorted by createdAt desc)
+export const getRecentVideos = async (req, res) => {
+  try {
+    const videos = await Video.find()
+      .populate("pageId", "name")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: videos.length,
+      data: videos,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching recent videos",
+    });
+  }
+};
+
+// Increment view count
+export const incrementView = async (req, res) => {
+  try {
+    const video = await Video.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      data: video,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error incrementing view count",
+    });
+  }
+};
+
 // Get single video
 export const getVideo = async (req, res) => {
   try {

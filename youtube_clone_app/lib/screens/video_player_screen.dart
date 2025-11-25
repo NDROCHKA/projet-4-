@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
+import '../services/api_service.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final String videoUrl;
+  final String videoId;
 
-  const VideoPlayerScreen({super.key, required this.videoUrl});
+  const VideoPlayerScreen({
+    super.key, 
+    required this.videoUrl,
+    required this.videoId,
+  });
 
   @override
   State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
@@ -15,11 +21,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _videoPlayerController;
   ChewieController? _chewieController;
   bool _isLoading = true;
+  final ApiService _apiService = ApiService();
 
   @override
   void initState() {
     super.initState();
     _initializePlayer();
+    _incrementView();
+  }
+
+  Future<void> _incrementView() async {
+    await _apiService.incrementVideoView(widget.videoId);
   }
 
   Future<void> _initializePlayer() async {

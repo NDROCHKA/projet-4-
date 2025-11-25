@@ -4,6 +4,8 @@ class Video {
   final String videoUrl;
   final String thumbnailUrl;
   final String description;
+  final int views;
+  final DateTime createdAt;
 
   Video({
     required this.id,
@@ -11,6 +13,8 @@ class Video {
     required this.videoUrl,
     required this.thumbnailUrl,
     required this.description,
+    this.views = 0,
+    required this.createdAt,
   });
 
   factory Video.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,10 @@ class Video {
       videoUrl: json['videoUrl'] ?? '',
       thumbnailUrl: json['thumbnailUrl'] ?? '',
       description: json['description'] ?? '',
+      views: json['views'] ?? 0,
+      createdAt: json['createdAt'] != null 
+          ? DateTime.parse(json['createdAt']) 
+          : DateTime.now(),
     );
   }
 }
