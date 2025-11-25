@@ -62,19 +62,34 @@ export const uploadVideo = async (req, res) => {
 // Get all videos
 export const getVideos = async (req, res) => {
   try {
+    console.log('GET /video/getvideos - Fetching all videos...');
+
     const videos = await Video.find()
-      .populate("pageId", "name")
-      .sort({ createdAt: -1 });
+      .populate({
+        path: "pageId",
+        select: "name",
+        options: { strictPopulate: false }
+      })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    console.log(`Found ${videos.length} videos`);
+
+    if (videos.length > 0) {
+      console.log('First video:', JSON.stringify(videos[0], null, 2));
+    }
 
     res.json({
       success: true,
       count: videos.length,
-      data: videos, // Contains Backblaze URLs
+      data: videos,
     });
   } catch (error) {
+    console.error('Error fetching videos:', error);
     res.status(500).json({
       success: false,
       message: "Error fetching videos",
+      error: error.message,
     });
   }
 };
@@ -106,7 +121,6 @@ export const getVideo = async (req, res) => {
   }
 };
 
-// Delete video
 // Delete video
 export const deleteVideo = async (req, res) => {
   try {

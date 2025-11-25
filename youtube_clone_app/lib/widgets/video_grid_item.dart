@@ -34,25 +34,47 @@ class VideoGridItem extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               child: video.thumbnailUrl.isNotEmpty
                   ? Image.network(
-                      video.thumbnailUrl, // Temporarily direct URL for debugging
-                      // 'http://localhost:3500/proxy?url=${Uri.encodeComponent(video.thumbnailUrl)}',
+                      'http://localhost:3500/proxy?url=${Uri.encodeComponent(video.thumbnailUrl)}',
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: double.infinity,
                       errorBuilder: (context, error, stackTrace) {
-                        print("Error loading image: ${video.thumbnailUrl}");
-                        print("Error details: $error");
-                        print("Stack trace: $stackTrace");
-                        return const Center(
-                          child: Icon(Icons.broken_image, color: Colors.white54),
+                        print("❌ Error loading thumbnail");
+                        print("Original URL: ${video.thumbnailUrl}");
+                        print("Proxy URL: http://localhost:3500/proxy?url=${Uri.encodeComponent(video.thumbnailUrl)}");
+                        print("Error: $error");
+                        return Container(
+                          color: Colors.grey[300],
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                                SizedBox(height: 8),
+                                Text('No thumbnail', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                              ],
+                            ),
+                          ),
                         );
                       },
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
-                        return const Center(child: CircularProgressIndicator());
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
                       },
                     )
-                  : const Center(child: Icon(Icons.videocam, size: 50)),
+                  : Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: Icon(Icons.videocam, size: 50, color: Colors.grey),
+                      ),
+                    ),
             ),
           ),
           const SizedBox(height: 4),
