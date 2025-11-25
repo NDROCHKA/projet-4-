@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
@@ -193,7 +194,47 @@ class _HomeScreenState extends State<HomeScreen>
           _buildVideoGrid(_recentVideos),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _handleUploadButtonPress(authProvider),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
     );
+  }
+
+  void _handleUploadButtonPress(AuthProvider authProvider) {
+    if (authProvider.isAuthenticated) {
+      // Navigate to profile screen which has the upload functionality
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      );
+    } else {
+      // Show login prompt
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Login Required'),
+          content: const Text('You need to login to upload videos. Would you like to login now?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              },
+              child: const Text('Login'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   void _filterVideos(String query) {

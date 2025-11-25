@@ -132,6 +132,31 @@ class ApiService {
     }
   }
 
+  Future<List<dynamic>> getMyVideos() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/video/myvideos'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'];
+      } else {
+        throw Exception('Failed to load your videos');
+      }
+    } catch (e) {
+      print('Get My Videos error: $e');
+      return [];
+    }
+  }
+
   Future<bool> incrementVideoView(String videoId) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');

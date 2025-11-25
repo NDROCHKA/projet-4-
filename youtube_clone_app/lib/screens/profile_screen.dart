@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
+import '../models/video_model.dart';
+import '../widgets/video_grid_item.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,6 +15,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ApiService _apiService = ApiService();
   final ImagePicker _picker = ImagePicker();
   bool _isLoading = false;
+  List<Video> _myVideos = [];
+  bool _loadingVideos = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMyVideos();
+  }
+
+  Future<void> _fetchMyVideos() async {
+    try {
+      final videoData = await _apiService.getMyVideos();
+      if (mounted) {
+        setState(() {
+          _myVideos = videoData.map((json) => Video.fromJson(json)).toList();
+          _loadingVideos = false;
+        });
+      }
+    } catch (e) {
+      print("Error fetching my videos: $e");
+      if (mounted) {
+        setState(() => _loadingVideos = false);
+      }
+    }
+  }
 
   Future<void> _showUploadDialog() async {
     final titleController = TextEditingController();
@@ -142,6 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Upload Successful!')),
         );
+        _fetchMyVideos(); // Refresh video list
       }
     } catch (e) {
       print('Upload error in UI: $e');
@@ -165,11 +193,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Center(
+          : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Profile Image (circular)
                     CircleAvatar(
@@ -212,24 +239,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 32),
                     
                     // Videos section
-                    const Text(
-                      'My Videos',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'My Videos',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${_myVideos.length} videos',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     
-                    // Placeholder for videos
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          'No videos yet',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ),
-                    ),
+                    // Videos grid
+                    _loadingVideos
+                        ? const Center(child: CircularProgressIndicator())
+                        : _myVideos.isEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.all(32.0),
+                                child: Text(
+                                  'No videos yet',
+                                  style: TextStyle(color: Colors.grey[600]),
+                                ),
+                              )
+                            : GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: const EdgeInsets.all(8.0),
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 4,
+                                  childAspectRatio: 0.75,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                ),
+                                itemCount: _myVideos.length,
+                                itemBuilder: (context, index) {
+                                  return VideoGridItem(video: _myVideos[index]);
+                                },
+                              ),
                   ],
                 ),
               ),
