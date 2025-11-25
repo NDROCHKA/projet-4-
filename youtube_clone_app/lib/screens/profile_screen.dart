@@ -17,6 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isLoading = false;
   List<Video> _myVideos = [];
   bool _loadingVideos = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -25,18 +26,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _fetchMyVideos() async {
+    print('📱 ProfileScreen: Fetching my videos...');
     try {
       final videoData = await _apiService.getMyVideos();
+      print('📱 ProfileScreen: Received ${videoData.length} videos');
       if (mounted) {
         setState(() {
           _myVideos = videoData.map((json) => Video.fromJson(json)).toList();
           _loadingVideos = false;
+          _errorMessage = null;
         });
       }
     } catch (e) {
-      print("Error fetching my videos: $e");
+      print("📱 ProfileScreen: Error fetching my videos: $e");
       if (mounted) {
-        setState(() => _loadingVideos = false);
+        setState(() {
+          _loadingVideos = false;
+          _errorMessage = e.toString();
+        });
       }
     }
   }
@@ -263,29 +270,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Videos grid
                     _loadingVideos
                         ? const Center(child: CircularProgressIndicator())
-                        : _myVideos.isEmpty
+                        : _errorMessage != null
                             ? Padding(
                                 padding: const EdgeInsets.all(32.0),
-                                child: Text(
-                                  'No videos yet',
-                                  style: TextStyle(color: Colors.grey[600]),
+                                child: Column(
+                                  children: [
+                                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Error loading videos:',
+                                      style: TextStyle(
+                                        color: Colors.red[700],
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      _errorMessage!,
+                                      style: TextStyle(color: Colors.grey[600]),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton(
+                                      onPressed: _fetchMyVideos,
+                                      child: const Text('Retry'),
+                                    ),
+                                  ],
                                 ),
                               )
-                            : GridView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding: const EdgeInsets.all(8.0),
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 4,
-                                  childAspectRatio: 0.75,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                ),
-                                itemCount: _myVideos.length,
-                                itemBuilder: (context, index) {
-                                  return VideoGridItem(video: _myVideos[index]);
-                                },
-                              ),
+                            : _myVideos.isEmpty
+                                ? Padding(
+                                    padding: const EdgeInsets.all(32.0),
+                                    child: Text(
+                                      'No videos yet',
+                                      style: TextStyle(color: Colors.grey[600]),
+                                    ),
+                                  )
+                                : GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    padding: const EdgeInsets.all(8.0),
+                                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 4,
+                                      childAspectRatio: 0.75,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                    ),
+                                    itemCount: _myVideos.length,
+                                    itemBuilder: (context, index) {
+                                      return VideoGridItem(video: _myVideos[index]);
+                                    },
+                                  ),
                   ],
                 ),
               ),

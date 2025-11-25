@@ -132,6 +132,9 @@ class ApiService {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
+    print('🔍 getMyVideos called');
+    print('Token: ${token != null ? "EXISTS (${token.substring(0, 20)}...)" : "NULL"}');
+
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/video/myvideos'),
@@ -141,14 +144,19 @@ class ApiService {
         },
       );
 
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        print('✅ Success! Found ${data['data'].length} videos');
         return data['data'];
       } else {
-        throw Exception('Failed to load your videos');
+        print('❌ Failed with status ${response.statusCode}');
+        throw Exception('Failed to load your videos: ${response.body}');
       }
     } catch (e) {
-      print('Get My Videos error: $e');
+      print('❌ Get My Videos error: $e');
       return [];
     }
   }
