@@ -6,9 +6,19 @@ import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 
 class ApiService {
-  // Use localhost for Web/iOS and 10.0.2.2 for Android
-  // For web, we can just use localhost
-  static const String baseUrl = 'http://localhost:3500';
+  // Dynamic base URL that works from any device on the network
+  // When running on web, it uses the current host (e.g., http://192.168.1.100:3500)
+  // This allows the app to work from both PC (localhost) and phone (laptop's IP)
+  static String get baseUrl {
+    if (kIsWeb) {
+      // On web, use the current host with port 3500
+      final host = Uri.base.host;
+      return 'http://$host:3500';
+    } else {
+      // For mobile apps (if needed), you can set your laptop's IP here
+      return 'http://localhost:3500';
+    }
+  }
 
   Future<bool> login(String email, String password) async {
     try {
@@ -285,6 +295,32 @@ class ApiService {
       return false;
     }
   }
+
+  Future<bool> deleteVideo(String videoId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/video/deletevideo/$videoId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print('Delete video failed: ${response.body}');
+        throw Exception('Failed to delete video: ${response.body}');
+      }
+    } catch (e) {
+      print('Delete Video error: $e');
+      rethrow;
+    }
+  }
+
 
   MediaType _getMediaType(String? mimeType, String defaultType, String defaultSubType) {
     if (mimeType == null || mimeType.isEmpty) {

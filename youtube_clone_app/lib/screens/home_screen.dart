@@ -185,13 +185,86 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
       drawer: _buildDrawer(),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildHomeTab(),
-          _buildVideoGrid(_popularVideos),
-          _buildVideoGrid(_recentVideos),
-        ],
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF4A0000), // Dark Red
+              Color(0xFF000000), // Black
+            ],
+            stops: [0.0, 1.0],
+          ),
+        ),
+        child: Theme(
+          data: ThemeData.dark().copyWith(
+            scaffoldBackgroundColor: Colors.transparent,
+            canvasColor: Colors.transparent,
+          ),
+          child: Stack(
+            children: [
+              // Decorative background elements
+              Positioned(
+                top: -50,
+                right: -50,
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.03),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 100,
+                left: -80,
+                child: Container(
+                  width: 250,
+                  height: 250,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.02),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 150,
+                right: 50,
+                child: Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red.withOpacity(0.05),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: -30,
+                right: 100,
+                child: Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.red.withOpacity(0.04),
+                  ),
+                ),
+              ),
+              // Main content
+              TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildHomeTab(),
+                  _buildVideoGrid(_popularVideos),
+                  _buildVideoGrid(_recentVideos),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _handleUploadButtonPress(authProvider),
@@ -255,7 +328,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(12.0),
           child: TextField(
             controller: _searchController,
             onChanged: _filterVideos,
@@ -275,8 +348,11 @@ class _HomeScreenState extends State<HomeScreen>
             decoration: InputDecoration(
               hintText: 'Search videos...',
               prefixIcon: const Icon(Icons.search),
+              filled: true,
+              fillColor: Colors.white,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(12.0),
+                borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(vertical: 0),
             ),
@@ -288,12 +364,12 @@ class _HomeScreenState extends State<HomeScreen>
               : _filteredVideos.isEmpty
               ? const Center(child: Text('No videos found'))
               : GridView.builder(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
+                    crossAxisCount: 3,           // 3 videos per row
                     childAspectRatio: 0.75,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 4,          // Very tight spacing between rows
                   ),
                   itemCount: _filteredVideos.length,
                   itemBuilder: (context, index) {
@@ -313,12 +389,12 @@ class _HomeScreenState extends State<HomeScreen>
       return const Center(child: Text('No videos found'));
     }
     return GridView.builder(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
+        crossAxisCount: 3,           // 3 videos per row
         childAspectRatio: 0.75,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 4,          // Very tight spacing between rows
       ),
       itemCount: videos.length,
       itemBuilder: (context, index) {

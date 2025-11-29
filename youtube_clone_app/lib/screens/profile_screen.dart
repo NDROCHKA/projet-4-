@@ -192,6 +192,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _deleteVideo(String videoId, String videoTitle) async {
+    // Show confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Video'),
+        content: Text('Are you sure you want to delete "$videoTitle"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    // Show loading state
+    setState(() => _isLoading = true);
+
+    try {
+      await _apiService.deleteVideo(videoId);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Video deleted successfully')),
+        );
+        _fetchMyVideos(); // Refresh video list
+      }
+    } catch (e) {
+      print('Delete error in UI: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting video: ${e.toString().replaceAll('Exception: ', '')}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -200,10 +252,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
+          : Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF4A0000), // Dark Red
+                    Color(0xFF000000), // Black
+                  ],
+                  stops: [0.0, 1.0],
+                ),
+              ),
+              child: Theme(
+                data: ThemeData.dark().copyWith(
+                  scaffoldBackgroundColor: Colors.transparent,
+                  canvasColor: Colors.transparent,
+                ),
+                child: Stack(
+                  children: [
+                    // Decorative background elements
+                    Positioned(
+                      top: -30,
+                      right: -30,
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.03),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 80,
+                      left: -60,
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white.withOpacity(0.02),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 200,
+                      right: 30,
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red.withOpacity(0.05),
+                        ),
+                      ),
+                    ),
+                    // Main content
+                    SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
                   children: [
                     // Profile Image (circular)
                     CircleAvatar(
@@ -309,18 +418,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 : GridView.builder(
                                     shrinkWrap: true,
                                     physics: const NeverScrollableScrollPhysics(),
-                                    padding: const EdgeInsets.all(8.0),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 4,
+                                      crossAxisCount: 3,           // 3 videos per row
                                       childAspectRatio: 0.75,
-                                      crossAxisSpacing: 10,
-                                      mainAxisSpacing: 10,
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 4,          // Very tight spacing between rows
                                     ),
                                     itemCount: _myVideos.length,
                                     itemBuilder: (context, index) {
-                                      return VideoGridItem(video: _myVideos[index]);
+                                      final video = _myVideos[index];
+                                      return Stack(
+                                        children: [
+                                          VideoGridItem(video: video),
+                                          // Delete button overlay
+                                          Positioned(
+                                            top: 4,
+                                            right: 4,
+                                            child: Material(
+                                              color: Colors.transparent,
+                                              child: InkWell(
+                                                onTap: () => _deleteVideo(video.id, video.title),
+                                                borderRadius: BorderRadius.circular(20),
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(6),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red.withOpacity(0.9),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.white,
+                                                    size: 18,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
                                     },
                                   ),
+                  ],
+                ),
+              ),
+            ),
                   ],
                 ),
               ),

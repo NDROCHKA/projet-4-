@@ -84,14 +84,14 @@ class VideoGridItem extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               child: video.thumbnailUrl.isNotEmpty
                   ? Image.network(
-                      'http://localhost:3500/proxy?url=${Uri.encodeComponent(video.thumbnailUrl)}',
+                      '${ApiService.baseUrl}/proxy?url=${Uri.encodeComponent(video.thumbnailUrl)}',
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: double.infinity,
                       errorBuilder: (context, error, stackTrace) {
                         print("❌ Error loading thumbnail");
                         print("Original URL: ${video.thumbnailUrl}");
-                        print("Proxy URL: http://localhost:3500/proxy?url=${Uri.encodeComponent(video.thumbnailUrl)}");
+                        print("Proxy URL: ${ApiService.baseUrl}/proxy?url=${Uri.encodeComponent(video.thumbnailUrl)}");
                         print("Error: $error");
                         return Container(
                           color: Colors.grey[300],
