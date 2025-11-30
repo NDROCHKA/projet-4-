@@ -167,7 +167,7 @@ export const getMyVideos = async (req, res) => {
   try {
     // Get user's page ID from the authenticated user
     const Page = (await import("../page/page.model.js")).default;
-    const userPage = await Page.findOne({ userId: req.user.userId });
+    const userPage = await Page.findOne({ userId: req.user._id }); // FIXED: Changed from req.user.userId to req.user._id
 
     if (!userPage) {
       return res.status(404).json({
@@ -193,6 +193,7 @@ export const getMyVideos = async (req, res) => {
     });
   }
 };
+
 
 
 // Get single video
@@ -234,6 +235,25 @@ export const deleteVideo = async (req, res) => {
       });
     }
 
+    // Verify ownership - get user's page and check if it matches video's pageId
+    const Page = (await import("../page/page.model.js")).default;
+    const userPage = await Page.findOne({ userId: req.user._id });
+
+    if (!userPage) {
+      return res.status(404).json({
+        success: false,
+        message: "User page not found",
+      });
+    }
+
+    // Check if the video belongs to the user's page
+    if (video.pageId.toString() !== userPage._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to delete this video",
+      });
+    }
+
     // Extract file keys from URLs - FIXED
     const videoKey = video.videoUrl.split("/").slice(3).join("/"); // Get path after domain
     const thumbnailKey = video.thumbnailUrl
@@ -254,9 +274,12 @@ export const deleteVideo = async (req, res) => {
       message: "Video deleted successfully",
     });
   } catch (error) {
+    console.error("Error deleting video:", error);
     res.status(500).json({
       success: false,
       message: "Error deleting video",
+      error: error.message,
     });
   }
 };
+

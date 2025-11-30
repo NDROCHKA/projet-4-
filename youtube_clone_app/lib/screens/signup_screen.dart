@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
@@ -15,11 +16,12 @@ class _SignupScreenState extends State<SignupScreen> {
   final _lastnameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _profileImageController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _apiService = ApiService();
+  final _picker = ImagePicker();
   bool _isLoading = false;
   DateTime? _selectedDate;
+  XFile? _profileImage;
 
   @override
   void dispose() {
@@ -27,7 +29,6 @@ class _SignupScreenState extends State<SignupScreen> {
     _lastnameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _profileImageController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
@@ -46,14 +47,35 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
+  Future<void> _pickProfileImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        setState(() {
+          _profileImage = image;
+        });
+      }
+    } catch (e) {
+      print('Error picking image: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error picking image: $e')),
+        );
+      }
+    }
+  }
+
   void _signup() async {
     setState(() => _isLoading = true);
+    
+    // For now, we'll use empty string if no profile image
+    // TODO: Upload profile image to Backblaze first
     final success = await _apiService.register(
       _firstnameController.text,
       _lastnameController.text,
       _emailController.text,
       _passwordController.text,
-      _profileImageController.text,
+      '', // Profile image URL (empty for now)
       _descriptionController.text,
       _selectedDate?.toIso8601String() ?? '',
     );
@@ -109,10 +131,47 @@ class _SignupScreenState extends State<SignupScreen> {
                 label: 'Password',
                 isPassword: true,
               ),
-              CustomTextField(
-                controller: _profileImageController,
-                label: 'Profile Image URL (optional)',
+              const SizedBox(height: 16),
+              // Profile Image Picker
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.person, color: Colors.grey[700]),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _profileImage == null
+                                ? 'Profile Picture (optional)'
+                                : 'Image selected: ${_profileImage!.name}',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: _profileImage == null ? Colors.black54 : Colors.black,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: _pickProfileImage,
+                          icon: const Icon(Icons.upload, size: 18),
+                          label: Text(_profileImage == null ? 'Choose' : 'Change'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _profileImage != null ? Colors.green : const Color(0xFFB71C1C),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(height: 16),
               CustomTextField(
                 controller: _descriptionController,
                 label: 'Description (optional)',
