@@ -134,10 +134,11 @@ class VideoGridItem extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: 14,
+              fontSize: 16, // Increased from 14
+              color: Colors.white, // Explicitly white
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2), // Reduced from 4
           Text(
             '${_formatViews(video.views)} • ${_timeAgo(video.createdAt)}',
             style: TextStyle(
