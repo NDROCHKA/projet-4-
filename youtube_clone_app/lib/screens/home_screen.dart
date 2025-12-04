@@ -11,6 +11,7 @@ import 'search_results_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
 import 'login_screen.dart';
+import 'upload_video_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -277,10 +278,10 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _handleUploadButtonPress(AuthProvider authProvider) {
     if (authProvider.isAuthenticated) {
-      // Navigate to profile screen which has the upload functionality
+      // Navigate to upload video screen
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+        MaterialPageRoute(builder: (context) => const UploadVideoScreen()),
       );
     } else {
       // Show login prompt
@@ -368,9 +369,9 @@ class _HomeScreenState extends State<HomeScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,           // 3 videos per row
-                    childAspectRatio: 0.75,
+                    childAspectRatio: 0.8,       // Increased from 0.75 to make cards shorter
                     crossAxisSpacing: 12,
-                    mainAxisSpacing: 4,          // Very tight spacing between rows
+                    mainAxisSpacing: 0,          // Reduced from 4 to 0
                   ),
                   itemCount: _filteredVideos.length,
                   itemBuilder: (context, index) {
@@ -393,9 +394,9 @@ class _HomeScreenState extends State<HomeScreen>
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,           // 3 videos per row
-        childAspectRatio: 0.75,
+        childAspectRatio: 0.8,       // Increased from 0.75 to make cards shorter
         crossAxisSpacing: 12,
-        mainAxisSpacing: 4,          // Very tight spacing between rows
+        mainAxisSpacing: 0,          // Reduced from 4 to 0
       ),
       itemCount: videos.length,
       itemBuilder: (context, index) {

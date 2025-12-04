@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
 import '../models/video_model.dart';
 import '../widgets/video_grid_item.dart';
+import 'upload_video_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -48,149 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future<void> _showUploadDialog() async {
-    final titleController = TextEditingController();
-    final descriptionController = TextEditingController();
-    XFile? videoFile;
-    XFile? thumbnailFile;
 
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Upload Video'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(labelText: 'Title'),
-                    ),
-                    TextField(
-                      controller: descriptionController,
-                      decoration: const InputDecoration(labelText: 'Description'),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        try {
-                          final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-                          if (video != null) {
-                            setState(() {
-                              videoFile = video;
-                            });
-                          }
-                        } catch (e) {
-                          print('Error picking video: $e');
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error picking video: $e')),
-                            );
-                          }
-                        }
-                      },
-                      icon: const Icon(Icons.video_library),
-                      label: Text(videoFile != null ? 'Video Selected' : 'Pick Video'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: videoFile != null ? Colors.green : null,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        try {
-                          final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-                          if (image != null) {
-                            setState(() {
-                              thumbnailFile = image;
-                            });
-                          }
-                        } catch (e) {
-                          print('Error picking image: $e');
-                        }
-                      },
-                      icon: const Icon(Icons.image),
-                      label: Text(thumbnailFile != null ? 'Thumbnail Selected' : 'Pick Thumbnail'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: thumbnailFile != null ? Colors.green : null,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (titleController.text.isEmpty || videoFile == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Title and Video are required')),
-                      );
-                      return;
-                    }
-
-                    Navigator.pop(context); // Close dialog
-                    _uploadVideo(
-                      titleController.text,
-                      descriptionController.text,
-                      videoFile!,
-                      thumbnailFile,
-                    );
-                  },
-                  child: const Text('Upload'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> _uploadVideo(String title, String description, XFile video, XFile? thumbnail) async {
-    setState(() => _isLoading = true);
-
-    try {
-      final pageId = await _apiService.getMyPageId();
-      print('Retrieved Page ID: $pageId'); // Debug print
-
-      if (pageId == null) {
-        throw Exception('Could not get Page ID. Please try logging in again.');
-      }
-
-      await _apiService.uploadVideo(
-        title,
-        description,
-        video,
-        thumbnail,
-        pageId,
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Upload Successful!')),
-        );
-        _fetchMyVideos(); // Refresh video list
-      }
-    } catch (e) {
-      print('Upload error in UI: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString().replaceAll('Exception: ', '')}')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
 
   Future<void> _deleteVideo(String videoId, String videoTitle) async {
     // Show confirmation dialog
@@ -345,7 +204,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     // Upload Button
                     ElevatedButton.icon(
-                      onPressed: _showUploadDialog,
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const UploadVideoScreen()),
+                        );
+                        _fetchMyVideos();
+                      },
                       icon: const Icon(Icons.upload),
                       label: const Text('Upload New Video'),
                       style: ElevatedButton.styleFrom(
@@ -421,9 +286,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 3,           // 3 videos per row
-                                      childAspectRatio: 0.75,
+                                      childAspectRatio: 0.8,       // Increased from 0.75 to make cards shorter
                                       crossAxisSpacing: 12,
-                                      mainAxisSpacing: 4,          // Very tight spacing between rows
+                                      mainAxisSpacing: 0,          // Reduced from 4 to 0
                                     ),
                                     itemCount: _myVideos.length,
                                     itemBuilder: (context, index) {
